@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGENDA DR.IBARRA</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    
+
+    <header>
+        <div class="logo-container">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_e_ZjE9BvoMn87tDXs5nb4UeFutOi6bWs0Q&s" alt="Logo Agenda Médica" class="logo-pequeno">
+            <h1>AGENDA DR.IBARRA</h1>
+        </div>
+        
+        <div class="top-controls">
+            <button id="btn-nueva-cita" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Nueva Cita</button>
+            
+            <div class="vista-selector">
+                <button class="btn btn-vista active" data-vista="day">Día</button>
+                <button class="btn btn-vista" data-vista="week">Semana</button>
+                <button class="btn btn-vista" data-vista="month">Mes</button>
+            </div>
+
+            <div class="controles-fecha">
+                <button id="btn-hoy" class="btn">Hoy</button>
+                <input type="date" id="fecha-selector">
+            </div>
+
+            <button id="btn-cerrar-sesion" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Salir</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="calendario" id="calendario-dia-container">
+            <div class="hora-columna">
+                <div class="hora-bloque cabecera">Hora</div>
+                <div class="hora-bloque">09:00</div>
+                <div class="hora-bloque">09:30</div>
+                <div class="hora-bloque">10:00</div>
+                <div class="hora-bloque">10:30</div>
+                <div class="hora-bloque">11:00</div>
+                <div class="hora-bloque">11:30</div>
+                <div class="hora-bloque">12:00</div>
+                <div class="hora-bloque">12:30</div>
+                <div class="hora-bloque">13:00</div>
+                <div class="hora-bloque">13:30</div>
+                <div class="hora-bloque">14:00</div>
+                <div class="hora-bloque">14:30</div>
+            </div>
+
+            <div class="citas-columna" id="citas-container">
+                </div>
+        </div>
+        
+        <div id="multi-day-container" class="multi-day-container" style="display: none;">
+            </div>
+
+    </main>
+
+    <div id="modal" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar-modal">&times;</span>
+            <h2>Administrar Cita</h2>
+            <form id="formulario-cita">
+                <label for="paciente">Paciente:</label>
+                <input type="text" id="paciente" name="paciente" required>
+
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" name="fecha" required>
+
+                <label for="hora_inicio">Hora Inicio:</label>
+                <input type="time" id="hora_inicio" name="hora_inicio" required>
+
+                <label for="hora_fin">Hora Fin:</label>
+                <input type="time" id="hora_fin" name="hora_fin" required>
+
+                <label for="observaciones">Observaciones:</label>
+                <textarea id="observaciones" name="observaciones"></textarea>
+
+                <label for="estado">Estado:</label>
+                <select id="estado" name="estado">
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="completada">Completada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+
+                <input type="hidden" id="cita_id" name="cita_id">
+                <button type="submit" id="btn-guardar" class="btn btn-success">Guardar Cita</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
