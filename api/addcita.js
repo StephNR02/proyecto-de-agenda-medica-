@@ -1,26 +1,45 @@
 // api/addCita/index.js
-const { query } = require("../shared/postgres"); // ⬅️ Nuevo conector
-const { v4: uuidv4 } = require("uuid"); 
+// 🚨 CAMBIO 1: Reemplaza la conexión a Cosmos por la de Postgres
+const { query } = require("../shared/postgres"); 
+const { v4: uuidv4 } = require("uuid");
 
 module.exports = async function (context, req) {
   try {
     const body = req.body || {};
-    // ... (Definición de 'cita' y validaciones de campos) ...
-
-    // Consulta SQL para crear o actualizar (UPSERT)
-    const sqlQuery = `
-      INSERT INTO citas (id, paciente, fecha, hora_inicio, hora_fin, observaciones, estado)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-      ON CONFLICT (id) DO UPDATE SET
-        paciente = $2, fecha = $3, hora_inicio = $4, hora_fin = $5, observaciones = $6, estado = $7
-      RETURNING *;
-    `;
     
-    // ... (Definición de 'params') ...
-    await query(sqlQuery, params); // ⬅️ Lógica SQL
+    // ... (rest of the validation code is the same) ...
 
-    context.res = { status: 201, body: cita };
+    if (!cita.paciente || !cita.fecha || !cita.hora) {
+      context.res = {
+        status: 400,
+        body: { error: "Faltan campos obligatorios" },
+      };
+      return;
+    }
+
+    // 🚨 CAMBIO 2: Lógica para insertar en PostgreSQL
+    const sql = `
+        INSERT INTO citas (id, paciente, fecha, hora, motivo, creadaEn) 
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING *;
+    `;
+    const values = [
+      cita.id, 
+      cita.paciente, 
+      cita.fecha, 
+      cita.hora, 
+      cita.motivo, 
+      cita.creadaEn
+    ];
+
+    const result = await query(sql, values);
+
+    context.res = {
+      status: 201,
+      body: result.rows[0],
+    };
   } catch (err) {
-    // ... (Manejo de errores) ...
+    context.log("Error en addCita:", err);
+    // ... (rest of the error handling) ...
   }
 };

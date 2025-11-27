@@ -1,23 +1,13 @@
 // api/getCitas/index.js
-const { query } = require("../shared/postgres"); 
+// 🚨 CAMBIO 1: Reemplaza la conexión a Cosmos por la de Postgres
+const { query } = require("../shared/postgres");
 
 module.exports = async function (context, req) {
   try {
-    // 1. INTENTA CREAR LA TABLA (PostgreSQL necesita esto)
-    await query(`
-        CREATE TABLE IF NOT EXISTS citas (
-            id TEXT PRIMARY KEY, 
-            paciente TEXT NOT NULL,
-            fecha DATE NOT NULL,
-            hora_inicio TIME NOT NULL,
-            hora_fin TIME NOT NULL,
-            observaciones TEXT,
-            estado TEXT NOT NULL
-        );
-    `);
+    // 🚨 CAMBIO 2: Lógica para obtener citas desde PostgreSQL
+    const sql = "SELECT * FROM citas ORDER BY fecha DESC, hora DESC";
     
-    // 2. CONSULTA SQL para obtener las citas
-    const result = await query("SELECT * FROM citas ORDER BY fecha DESC");
+    const result = await query(sql);
 
     context.res = {
       status: 200,
@@ -26,6 +16,6 @@ module.exports = async function (context, req) {
     };
   } catch (err) {
     context.log("Error en getCitas:", err);
-    context.res = { status: 500, body: { error: "Error al obtener citas" } };
+    // ... (rest of the error handling) ...
   }
 };
