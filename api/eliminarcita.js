@@ -1,31 +1,23 @@
-// api/deleteCita/index.js
-const { getContainer } = require("../shared/cosmos");
+// api/eliminarcita/index.js
+const { query } = require("../shared/postgres"); 
 
 module.exports = async function (context, req) {
   try {
-    const id = context.bindingData.id;
-    const partitionKey = req.query.pk || req.body?.pk || req.headers["x-partition-key"];
+    // El 'id' se obtiene de la URL (ruta: citas/{id})
+    const id = context.bindingData.id; 
 
-    if (!id || !partitionKey) {
-      context.res = {
-        status: 400,
-        body: { error: "Faltan id o partitionKey (pk)" },
-      };
+    if (!id) {
+      context.res = { status: 400, body: { error: "Falta el ID de la cita a eliminar" } };
       return;
     }
+    
+    // Consulta SQL para eliminar
+    const sqlQuery = "DELETE FROM citas WHERE id = $1";
+    await query(sqlQuery, [id]);
 
-    const container = await getContainer();
-    await container.item(id, partitionKey).delete();
-
-    context.res = {
-      status: 204,
-      body: null,
-    };
+    context.res = { status: 204, body: null }; // 204: Eliminación exitosa sin contenido
   } catch (err) {
     context.log("Error en deleteCita:", err);
-    context.res = {
-      status: 500,
-      body: { error: "Error al eliminar la cita" },
-    };
+    context.res = { status: 500, body: { error: "Error al eliminar la cita" } };
   }
 };

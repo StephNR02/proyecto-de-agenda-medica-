@@ -1,41 +1,26 @@
 // api/addCita/index.js
-const { getContainer } = require("../shared/cosmos");
-const { v4: uuidv4 } = require("uuid");
+const { query } = require("../shared/postgres"); // ⬅️ Nuevo conector
+const { v4: uuidv4 } = require("uuid"); 
 
 module.exports = async function (context, req) {
   try {
     const body = req.body || {};
+    // ... (Definición de 'cita' y validaciones de campos) ...
 
-    // Campos esperados: paciente, fecha, hora, motivo
-    const cita = {
-      id: uuidv4(),
-      paciente: body.paciente,
-      fecha: body.fecha,
-      hora: body.hora,
-      motivo: body.motivo,
-      creadaEn: new Date().toISOString(),
-    };
+    // Consulta SQL para crear o actualizar (UPSERT)
+    const sqlQuery = `
+      INSERT INTO citas (id, paciente, fecha, hora_inicio, hora_fin, observaciones, estado)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      ON CONFLICT (id) DO UPDATE SET
+        paciente = $2, fecha = $3, hora_inicio = $4, hora_fin = $5, observaciones = $6, estado = $7
+      RETURNING *;
+    `;
+    
+    // ... (Definición de 'params') ...
+    await query(sqlQuery, params); // ⬅️ Lógica SQL
 
-    if (!cita.paciente || !cita.fecha || !cita.hora) {
-      context.res = {
-        status: 400,
-        body: { error: "Faltan campos obligatorios" },
-      };
-      return;
-    }
-
-    const container = await getContainer();
-    const { resource } = await container.items.create(cita);
-
-    context.res = {
-      status: 201,
-      body: resource,
-    };
+    context.res = { status: 201, body: cita };
   } catch (err) {
-    context.log("Error en addCita:", err);
-    context.res = {
-      status: 500,
-      body: { error: "Error al crear la cita" },
-    };
+    // ... (Manejo de errores) ...
   }
 };
